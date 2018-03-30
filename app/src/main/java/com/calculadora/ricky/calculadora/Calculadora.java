@@ -15,6 +15,9 @@ public class Calculadora extends AppCompatActivity {
     private String display = "";
     private String operadorActual = "";
     private String resultado = "";
+    boolean signo = false;
+    private String operation1;
+    private String res;
 
 
     @Override
@@ -29,6 +32,7 @@ public class Calculadora extends AppCompatActivity {
     public void actualizarScreen(){
 
         screen2.setText(display);
+        res="";
     }
 
     public void teclearNumero(View v){//Cambiado por screen antes resultado
@@ -89,6 +93,7 @@ public class Calculadora extends AppCompatActivity {
         display="";
         operadorActual="";
         resultado="";
+        res="";
         screen.setText(display);
     }
 
@@ -113,6 +118,20 @@ public class Calculadora extends AppCompatActivity {
         if(operadorActual=="")return false;
         String [] operacion = display.split(Pattern.quote(operadorActual));
         if (operacion.length < 2) return false;
+        System.out.println("El operador actual es "+operadorActual);
+        System.out.println("EL display tiene "+display.substring(0,1).toString());
+        System.out.println(display.substring(0,1).toString().equals("-"));
+        System.out.println(operadorActual.contains("-"));
+        if(display.substring(0,1).toString().equals("-") && operadorActual.contains("-")){
+            res = display.substring(1,display.length());
+            operadorActual="-";
+            String []pun = res.split(Pattern.quote(operadorActual));
+            //operacion[0]=pun[0].toString().substring(1,pun[0].length());
+            operacion[0]="-"+pun[0];
+            operacion[1]=pun[1];
+            System.out.println("Esto es asi "+pun[0]+pun[1]);
+        }
+        System.out.println("ESTO MANDARE "+operacion[0] +" "+ operacion[1]+" "+ operadorActual);
         resultado = String.valueOf(operar(operacion[0], operacion[1], operadorActual));
         return true;
     }
@@ -120,7 +139,6 @@ public class Calculadora extends AppCompatActivity {
     public void teclearIgual(View v){
         if(display=="")return;
         if(!obtenerResultado())return;
-
         //screen.setText(display + "\n" + String.valueOf(resultado));
         screen2.setText(display);
         screen.setText(String.valueOf(resultado));
@@ -131,76 +149,75 @@ public class Calculadora extends AppCompatActivity {
         actualizarScreen();
     }
 
-    public void extras(String ex){
-        int total = display.length();
-        switch (ex){
-            case ".":
-                if(!display.contains(".")) {
-                    display = display + ".";
-                }else{
-                    if(operadorActual!=("")){
-                        String [] operacion = display.split(Pattern.quote(operadorActual));
-                        System.out.println(operacion.length);
-                        if(operacion.length==1 || !String.valueOf(operacion[1]).contains(".")){
-                            display = display + ".";
-                        }else{
-                            return;
-                        }
-                    }else{
-                        return;
-                    }
-                }
-                break;
-
-            case "+/-":
-                String [] operacion = display.split(Pattern.quote(operadorActual));
-                if(operadorActual!=""){
-                    if(operacion.length==1){return;}
-                    else{
-                        double convertir = Double.parseDouble(operacion[1].toString())*(-1);
-                        System.out.println(convertir + operacion[0]+operadorActual+String.valueOf(convertir));
-                        display = operacion[0]+operadorActual+String.valueOf(convertir);
-                    }
-                }else{
-                    if(display.isEmpty()){return;}
-                    else{
-                        double convertir2 = Double.parseDouble(display.toString())*(-1);
-                        System.out.println(convertir2 +String.valueOf(convertir2));
-                        display = String.valueOf(convertir2);
-                    }
-                }
-                /*if(operadorActual!=""){
-                    if(operacion.length==1){
-                        display = display + "-";
-                    }else{
-                        if(operacion[1].contains("-")==true){
-                            display = operacion[0]+operadorActual+operacion[1].substring(1,operacion[1].length());
-                        }else{
-                            display = operacion[0]+operadorActual+"-"+operacion[1];
-                        }
-                    }
-                }else{
-                    String op = display;
-                    if(operacion.length==0){
-                        display = "-";
-                    }else{
-                        if(op.contains("-")){
-                            display = op.substring(1);
-                        }else{
-                            display = "-"+op;
-                        }
-                    }
-                }
-                break;*/
-
-            default:
-
-        }
-    }
 
     public void teclearExtras(View v){
-        Button b = (Button) v;
-        extras(b.getText().toString());
+        String [] operacion = display.split(Pattern.quote(operadorActual));
+
+        if(operadorActual!=""){
+            if(operacion.length==1){return;}
+            else{
+                if(display.substring(0,1).contains("-")&&operadorActual.contains("-")){
+                    operation1 = display.substring(1, display.length());
+                    String[]pepe = operation1.split(Pattern.quote(operadorActual));
+                    operacion[0]="-"+pepe[0].toString();
+                    operacion[1]=pepe[1].toString();
+
+                }
+                double convertir = Double.parseDouble(operacion[1].toString())*(-1);
+                System.out.println("AL presionar +/-: "+convertir +"<- NUMERO CONVERTIR " + operacion[0]+operadorActual+String.valueOf(convertir));
+                display = operacion[0]+operadorActual+String.valueOf(convertir);
+                if(String.valueOf(convertir).contains("-")){
+                    double volver = convertir*(-1);
+                    System.out.println(volver + " MIERDA ESTE ES VOLVER");
+                    if(operacion[0].contains("-")){
+                        res = operacion[0].substring(1,operacion[0].length())+operadorActual+String.valueOf(volver);
+                        System.out.println("Aqui el res (SI OPERACION 0 CONTIENE -) es: "+res);
+                        if(operadorActual.contains("-")){
+                            operadorActual="+";
+                            operacion[1]=""+volver;
+                            display = operacion[0]+operadorActual+operacion[1];
+                        }
+
+                        //comprobarOperacion();
+                        signo=true;
+
+                        if(operadorActual=="-"){
+                            operadorActual="+";
+                            operacion[1]=""+volver;
+                        }
+
+                    }else{
+                        signo=false;
+                        res = operacion[0]+operadorActual+String.valueOf(volver);
+                        System.out.println("Aqui el res (SI OPERACION 0 NO CONTIENE -) es: "+res);
+                        //comprobarOperacion();
+                        if(operadorActual=="-"){
+                            operadorActual="+";
+                            operacion[1]=""+volver;
+                            display = operacion[0]+operadorActual+operacion[1];
+                            System.out.println("La op seria: " +operacion[0]+operadorActual+operacion[1]);
+                        }
+                    }
+                }else{
+                    if(operacion[0].contains("-")){
+                        res = operacion[0].substring(1,operacion[0].length())+operadorActual+operacion[1];
+                        System.out.println("Aqui el res op0 contiene -, es: "+res);
+                        //comprobarOperacion();
+                    }else{
+                        res = operacion[0]+operadorActual+operacion[1];
+                        System.out.println("Aqui el res op0 no contiene - es: "+res);
+                        //comprobarOperacion();
+                    }
+                }
+            }
+        }else{
+            if(display.isEmpty()){return;}
+            else{
+                double convertir2 = Double.parseDouble(display.toString())*(-1);
+                System.out.println(String.valueOf(convertir2));
+                display = String.valueOf(convertir2);
+            }
+        }
         actualizarScreen();
     }
 
@@ -223,12 +240,32 @@ public class Calculadora extends AppCompatActivity {
 
     }
 
-    public void comprobarOperacion(){
-        System.out.println(operadorActual+" ANTIGUO");
-        if(!screen2.getText().toString().contains("+")&&!screen2.getText().toString().contains("-")&&!screen2.getText().toString().contains("/")&&!screen2.getText().toString().contains("*")){
-            operadorActual = "";
-            System.out.println(operadorActual+" NUEVO");
+    public void teclearPunto(View v){
+        if(!display.contains(".")) {
+            display = display + ".";
+        }else{
+            if(operadorActual!=("")){
+                String [] operacion = display.split(Pattern.quote(operadorActual));
+                System.out.println(operacion.length);
+                if(operacion.length==2 && !String.valueOf(operacion[1]).contains(".")){
+                    display = display + ".";
+                }else{
+                    return;
+                }
+            }else{
+                return;
+            }
         }
+        actualizarScreen();
+
     }
 
+    public void comprobarOperacion() {
+        System.out.println(operadorActual + " ANTIGUO");
+        if (!screen2.getText().toString().contains("+") && !screen2.getText().toString().contains("-") && !screen2.getText().toString().contains("/") && !screen2.getText().toString().contains("*")) {
+                operadorActual = "";
+                System.out.println(operadorActual + " NUEVO");
+
+        }
+    }
 }
