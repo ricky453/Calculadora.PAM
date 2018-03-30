@@ -108,7 +108,7 @@
                 android:layout_span="4"
                 android:layout_weight="10"
                 android:background="@color/colorPrimary"
-                android:onClick="teclearExtras"
+                android:onClick="teclearDEL"
                 android:text="DEL"
                 android:textAlignment="center"
                 android:textColor="@android:color/background_dark"

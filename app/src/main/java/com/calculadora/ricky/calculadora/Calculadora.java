@@ -27,11 +27,12 @@ public class Calculadora extends AppCompatActivity {
     }
 
     public void actualizarScreen(){
+
         screen2.setText(display);
     }
 
-    public void teclearNumero(View v){
-        if(resultado != ""){
+    public void teclearNumero(View v){//Cambiado por screen antes resultado
+        if(screen.getText().toString() != ""){
             limpiar();
             actualizarScreen();
         }
@@ -55,15 +56,18 @@ public class Calculadora extends AppCompatActivity {
 
         if (display== "")return;
 
-        if(resultado != "") {
+        if(screen.getText().toString() != "") {//Cambiado por screen, antes resultado
             String _display = resultado;
             limpiar();
             display = _display;
         }
-
+        System.out.println("Aqui compruebo si el operador es distinto a nada: "+operadorActual);
         if(operadorActual != ""){
+            System.out.println("EL operador Actual es distinto a nada, es decir hay un operador");
             Log.d("CalcX", ""+display.charAt(display.length()-1));
             if(operador(display.charAt(display.length()-1))){
+
+                System.out.println("Display.length "+(display.length()-1));
                 display = display.replace(display.charAt(display.length()-1), b.getText().charAt(0));
                 operadorActual = b.getText().toString();
                 actualizarScreen();
@@ -73,9 +77,11 @@ public class Calculadora extends AppCompatActivity {
                 display = resultado;
                 resultado = "";
             }
-            operadorActual = b.getText().toString();
+            operadorActual   = b.getText().toString();
         }
+        System.out.println("Esto va si o si " + b.getText() +" el ex display era " + display);
         display += b.getText();
+        System.out.println("Hoy el display es " + display);
         operadorActual = b.getText().toString();
         actualizarScreen();
     }
@@ -146,9 +152,24 @@ public class Calculadora extends AppCompatActivity {
                 }
                 break;
 
-            /*case "+/-":
+            case "+/-":
                 String [] operacion = display.split(Pattern.quote(operadorActual));
                 if(operadorActual!=""){
+                    if(operacion.length==1){return;}
+                    else{
+                        double convertir = Double.parseDouble(operacion[1].toString())*(-1);
+                        System.out.println(convertir + operacion[0]+operadorActual+String.valueOf(convertir));
+                        display = operacion[0]+operadorActual+String.valueOf(convertir);
+                    }
+                }else{
+                    if(display.isEmpty()){return;}
+                    else{
+                        double convertir2 = Double.parseDouble(display.toString())*(-1);
+                        System.out.println(convertir2 +String.valueOf(convertir2));
+                        display = String.valueOf(convertir2);
+                    }
+                }
+                /*if(operadorActual!=""){
                     if(operacion.length==1){
                         display = display + "-";
                     }else{
@@ -171,11 +192,7 @@ public class Calculadora extends AppCompatActivity {
                     }
                 }
                 break;*/
-            case "DEL":
-                if(!display.isEmpty()){
-                    display = display.substring(0,total-1);
-                }
-                break;
+
             default:
 
         }
@@ -187,5 +204,31 @@ public class Calculadora extends AppCompatActivity {
         actualizarScreen();
     }
 
+    public void teclearDEL(View v){
+        int total = display.length();
+        if(!display.isEmpty()){
+            if(!screen.getText().toString().isEmpty()){
+                display = screen.getText().toString();
+                screen.setText("");
+                actualizarScreen();
+                comprobarOperacion();
+
+            }else{
+                display = display.substring(0,total-1);
+                System.out.println(display + " lo de screen lo paso a display " + screen2.getText() +" que sera lo que hay ");
+                actualizarScreen();
+                comprobarOperacion();
+            }
+        }
+
+    }
+
+    public void comprobarOperacion(){
+        System.out.println(operadorActual+" ANTIGUO");
+        if(!screen2.getText().toString().contains("+")&&!screen2.getText().toString().contains("-")&&!screen2.getText().toString().contains("/")&&!screen2.getText().toString().contains("*")){
+            operadorActual = "";
+            System.out.println(operadorActual+" NUEVO");
+        }
+    }
 
 }
