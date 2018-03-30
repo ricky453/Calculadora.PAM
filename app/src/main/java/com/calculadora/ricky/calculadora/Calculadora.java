@@ -18,6 +18,8 @@ public class Calculadora extends AppCompatActivity {
     boolean signo = false;
     private String operation1;
     private String res;
+    private String pen;
+    String [] ymh;
 
 
     @Override
@@ -61,6 +63,7 @@ public class Calculadora extends AppCompatActivity {
         if (display== "")return;
 
         if(screen.getText().toString() != "") {//Cambiado por screen, antes resultado
+            System.out.println( "MERDA AQUI ESTA ESTO "+screen.getText().toString() != "" + " " + screen.getText().toString());
             String _display = resultado;
             limpiar();
             display = _display;
@@ -177,21 +180,15 @@ public class Calculadora extends AppCompatActivity {
                             operacion[1]=""+volver;
                             display = operacion[0]+operadorActual+operacion[1];
                         }
-
                         //comprobarOperacion();
                         signo=true;
-
-                        if(operadorActual=="-"){
-                            operadorActual="+";
-                            operacion[1]=""+volver;
-                        }
 
                     }else{
                         signo=false;
                         res = operacion[0]+operadorActual+String.valueOf(volver);
                         System.out.println("Aqui el res (SI OPERACION 0 NO CONTIENE -) es: "+res);
                         //comprobarOperacion();
-                        if(operadorActual=="-"){
+                        if(operadorActual.contains("-")){
                             operadorActual="+";
                             operacion[1]=""+volver;
                             display = operacion[0]+operadorActual+operacion[1];
@@ -245,9 +242,16 @@ public class Calculadora extends AppCompatActivity {
             display = display + ".";
         }else{
             if(operadorActual!=("")){
-                String [] operacion = display.split(Pattern.quote(operadorActual));
-                System.out.println(operacion.length);
-                if(operacion.length==2 && !String.valueOf(operacion[1]).contains(".")){
+                if(display.substring(0,1).contains("-")){
+                    pen = display.substring(1, display.length());
+                    ymh = pen.split(Pattern.quote(operadorActual));
+                }else{
+                    ymh = display.split(Pattern.quote(operadorActual));
+                }
+
+                System.out.println(ymh.length);
+                System.out.println("CUANTOS PUNTOS HAY "+ymh[1].toString() +" " + String.valueOf(ymh[1]).contains("."));
+                if(ymh.length==2 && !String.valueOf(ymh[1]).toString().contains(".")){
                     display = display + ".";
                 }else{
                     return;
